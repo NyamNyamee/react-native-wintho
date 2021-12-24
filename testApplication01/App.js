@@ -18,6 +18,8 @@ import {
 } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import Header from './src/jsx/Header';
 import Generator from './src/jsx/Generator';
@@ -29,11 +31,44 @@ import Modal from './src/jsx/ModalComponent';
 import Home from './src/jsx/Home';
 import User from './src/jsx/User';
 import HomeLogo from './src/jsx/HomeLogo';
+import Home_tab from './src/jsx/Home_tab';
+import User_tab from './src/jsx/User_tab';
+import Message_tab from './src/jsx/Message_tab';
 
 import Joona from './src/asset/img/joona.png';
 import HomeIcon from './src/asset/img/home.png';
 
 const Stack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator();
+const TabBarIcon = (focused, name) => {
+  let iconImagePath;
+  let iconName, iconSize, iconColor;
+
+  if (name === 'Home_tab') {
+    iconName = 'home-outline';
+    // iconImagePath = require('./src/asset/img/home.png');
+  } else if (name === 'User_tab') {
+    iconName = 'people-outline';
+    // iconImagePath = require('./src/asset/img/account_01.png');
+  } else if (name === 'Message_tab') {
+    iconName = 'chatbox-outline';
+    // iconImagePath = require('./src/asset/img/chat_01.png');
+  }
+
+  iconSize = focused ? 25 : 20;
+  iconColor = focused ? '#28F' : 'grey';
+
+  return (
+    // <Image
+    //   style={{
+    //     width: focused ? 18 : 15,
+    //     height: focused ? 24 : 20,
+    //   }}
+    //   source={iconImagePath}
+    // />
+    <Ionicons name={iconName} size={iconSize} color={iconColor} />
+  );
+};
 
 const App = () => {
   const [headerTitle, setHeaderTitle] = useState('HeaderTitle');
@@ -68,41 +103,21 @@ const App = () => {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="Home"
-        // 모든 스택 스크린에 공통 적용되는 옵션
-        screenOptions={{
-          headerStyle: { backgroundColor: '#F55' }, // 헤더 스타일
-          headerTintColor: '#AAF', // 이전으로 이동하는 화살표 타이틀 색상
-          headerTitleStyle: { fontWeight: 'bold', color: '#FFF' }, // 헤더 타이틀 스타일
-        }}
+      <Tab.Navigator
+        initialRouteName="Home_tab"
+        screenOptions={({ route }) => ({
+          tabBarActiveTintColor: '#28F',
+          tabBarInactiveTintColor: '#777',
+          headerShown: false,
+          tabBarLabel: route.name,
+          tabBarLabelPosition: 'below-icon',
+          tabBarIcon: ({ focused }) => TabBarIcon(focused, route.name),
+        })}
       >
-        <Stack.Screen
-          name="Home"
-          component={Home}
-          options={{
-            headerTitle: () => <HomeLogo />,
-            headerRight: () => (
-              <Button
-                title="Info"
-                onPress={() => {
-                  alert('info button clicked!');
-                }}
-                color="#F99"
-              />
-            ),
-          }}
-        />
-        <Stack.Screen
-          name="User"
-          component={User}
-          initialParams={{
-            userIndex: 1,
-            userName: 'Inboo',
-            userLastName: 'Lee',
-          }}
-        />
-      </Stack.Navigator>
+        <Tab.Screen name="Home_tab" component={Home_tab} />
+        <Tab.Screen name="User_tab" component={User_tab} />
+        <Tab.Screen name="Message_tab" component={Message_tab} />
+      </Tab.Navigator>
     </NavigationContainer>
   );
 };
